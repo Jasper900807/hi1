@@ -1,21 +1,19 @@
 package tw.test.dao;
 
-import java.util.List;
-
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 
-import tw.test.entity.Member;
+import tw.test.entity.Cust;
+import tw.test.entity.Order;
 import tw.test.hi1.HibernateUtil;
 
-public class MemberDao {
-	public void save(Member member) {
+public class CustDao {
+	public void save(Cust cust) {
 		Transaction transaction = null;
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			transaction = session.beginTransaction();
 			
-			session.persist(member);
+			session.persist(cust);
 			
 			
 			transaction.commit();
@@ -27,12 +25,12 @@ public class MemberDao {
 		} 
 	}
 	
-	public void delete(Member member) {
+	public void delete(Cust cust) {
 		Transaction transaction = null;
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			transaction = session.beginTransaction();
 			
-			session.remove(member);
+			session.remove(cust);
 			
 			
 			transaction.commit();
@@ -44,12 +42,12 @@ public class MemberDao {
 		} 
 	}
 	
-	public void update(Member member) {
+	public void update(Cust cust) {
 		Transaction transaction = null;
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			transaction = session.beginTransaction();
 			
-			session.merge(member);
+			session.merge(cust);
 			
 			
 			transaction.commit();
@@ -61,9 +59,9 @@ public class MemberDao {
 		} 
 	}
 	
-	public Member getById(int id) {
+	public Cust getById(int id) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			return session.get(Member.class, id);
+			return session.get(Cust.class, id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -71,11 +69,9 @@ public class MemberDao {
 		return null;
 	}
 	
-	public List<Member> getAll() {
+	public Order getOrderById(int id) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			// SQL(DB) -> HQL(entity)
-			String hql = "FROM Member";
-			return session.createQuery(hql, Member.class).getResultList();
+			return session.get(Order.class, id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -83,18 +79,32 @@ public class MemberDao {
 		return null;
 	}
 	
-	public List<Member> getByKey(String keyword) {
+	public void removeOrderFromCust(long custId, long orderId) {
+		Transaction transaction = null;
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			// SQL(DB) -> HQL(entity)
-			String hql = "FROM Member m WHERE m.account LIKE :key OR m.name LIKE :key";
-			Query<Member> query = session.createQuery(hql, Member.class);
-			query.setParameter("key", "%" + keyword + "%");
+			transaction = session.beginTransaction();
 			
-			return query.list();
-		}
+			Order delOrder = null;
+			Cust cust = session.get(Cust.class, custId);
+			for (Order order : cust.getOrders()) {
+				if (order.getId() == orderId) {
+					delOrder = order;
+					break;
+				}
+			}
+			
+			if (delOrder != null) {
+				cust.delOrder(delOrder);
+			}	
+			
+			session.merge(cust);
+			
+			transaction.commit();
+		} 
 		catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+			if (transaction != null) {
+				transaction.rollback();
+			}
+		} 
 	}
 }

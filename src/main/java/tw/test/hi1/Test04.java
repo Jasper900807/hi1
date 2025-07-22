@@ -6,7 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.NativeQuery;
 
-import tw.test.enyity.Member;
+import tw.test.entity.Member;
 
 public class Test04 {
 

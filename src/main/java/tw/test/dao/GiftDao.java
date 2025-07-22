@@ -6,16 +6,18 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-import tw.test.entity.Member;
+import tw.test.entity.Cust;
+import tw.test.entity.Gift;
+import tw.test.entity.Order;
 import tw.test.hi1.HibernateUtil;
 
-public class MemberDao {
-	public void save(Member member) {
+public class GiftDao {
+	public void save(Gift gift) {
 		Transaction transaction = null;
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			transaction = session.beginTransaction();
 			
-			session.persist(member);
+			session.persist(gift);
 			
 			
 			transaction.commit();
@@ -27,12 +29,12 @@ public class MemberDao {
 		} 
 	}
 	
-	public void delete(Member member) {
+	public void delete(Gift gift) {
 		Transaction transaction = null;
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			transaction = session.beginTransaction();
 			
-			session.remove(member);
+			session.remove(gift);
 			
 			
 			transaction.commit();
@@ -44,12 +46,12 @@ public class MemberDao {
 		} 
 	}
 	
-	public void update(Member member) {
+	public void update(Gift gift) {
 		Transaction transaction = null;
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			transaction = session.beginTransaction();
 			
-			session.merge(member);
+			session.merge(gift);
 			
 			
 			transaction.commit();
@@ -61,9 +63,9 @@ public class MemberDao {
 		} 
 	}
 	
-	public Member getById(int id) {
+	public Gift getById(int id) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			return session.get(Member.class, id);
+			return session.get(Gift.class, id);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -71,11 +73,11 @@ public class MemberDao {
 		return null;
 	}
 	
-	public List<Member> getAll() {
+	public List<Gift> getAll() {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
 			// SQL(DB) -> HQL(entity)
-			String hql = "FROM Member";
-			return session.createQuery(hql, Member.class).getResultList();
+			String hql = "FROM Gift";
+			return session.createQuery(hql, Gift.class).getResultList();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -83,18 +85,25 @@ public class MemberDao {
 		return null;
 	}
 	
-	public List<Member> getByKey(String keyword) {
+	public List<Gift> getBySQL(String sql) {
 		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-			// SQL(DB) -> HQL(entity)
-			String hql = "FROM Member m WHERE m.account LIKE :key OR m.name LIKE :key";
-			Query<Member> query = session.createQuery(hql, Member.class);
-			query.setParameter("key", "%" + keyword + "%");
-			
-			return query.list();
+			return session.createNativeQuery(sql, Gift.class).getResultList();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+	
+	public List<Gift> getByHQL(String hql) {
+		try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+			return session.createQuery(hql, Gift.class).getResultList();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
 }
