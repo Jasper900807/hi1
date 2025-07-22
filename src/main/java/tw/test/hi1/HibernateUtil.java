@@ -3,11 +3,13 @@ package tw.test.hi1;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import tw.test.entity.Course;
 import tw.test.entity.Cust;
 import tw.test.entity.Gift;
 import tw.test.entity.Member;
 import tw.test.entity.MemberInfo;
 import tw.test.entity.Order;
+import tw.test.entity.Student;
 
 public class HibernateUtil {
 	private static SessionFactory sessionFactory;
@@ -22,6 +24,8 @@ public class HibernateUtil {
 			config.addAnnotatedClass(MemberInfo.class);
 			config.addAnnotatedClass(Cust.class);
 			config.addAnnotatedClass(Order.class);
+			config.addAnnotatedClass(Student.class);
+			config.addAnnotatedClass(Course.class);
 			
 			sessionFactory = config.buildSessionFactory();
 		}
